@@ -1,5 +1,6 @@
 package com.klashz.api_reserva_samanes.user
 
+import com.klashz.api_reserva_samanes.group.GroupEntity
 import jakarta.persistence.*
 import jakarta.validation.constraints.Email
 import jakarta.validation.constraints.NotBlank
@@ -37,4 +38,11 @@ data class UserEntity(
     var direction: String,
     @field:Column(name = "imagen")
     var image:String?,
-    )
+
+    @OneToOne(mappedBy = "owner", fetch = FetchType.LAZY)
+    var group: GroupEntity?,
+
+    @ManyToOne
+    @JoinColumn(name = "member_id")
+    var  groupMember : GroupEntity?
+)
