@@ -7,5 +7,4 @@ data class GroupDto(
     val name: String,
     val imageGroup: String?,
     val ownerId: String,
-    val userIds: List<String>
 )

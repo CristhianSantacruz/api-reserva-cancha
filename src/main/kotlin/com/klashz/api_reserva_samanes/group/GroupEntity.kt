@@ -21,7 +21,7 @@ data class GroupEntity(
     var owner : UserEntity?,
 
     @OneToMany(mappedBy = "members")
-    var users: MutableList<UserEntity>?
+    var users: MutableList<UserEntity>
 ){
 
 }

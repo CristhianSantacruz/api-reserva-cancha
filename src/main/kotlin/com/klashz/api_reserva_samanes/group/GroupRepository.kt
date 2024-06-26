@@ -9,4 +9,6 @@ import java.util.UUID
 interface GroupRepository : JpaRepository<GroupEntity,UUID> {
 
     fun findByGroupName(groupName: String): Optional<GroupEntity>
+
+    fun existsByName(name: String): Boolean
 }

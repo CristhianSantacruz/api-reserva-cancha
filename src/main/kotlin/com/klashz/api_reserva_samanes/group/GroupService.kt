@@ -30,6 +30,7 @@ class GroupService(private val groupRepository: GroupRepository,private val user
             throw IllegalStateException("El usuario ya tiene un grupo asociado.")
         }
 
+
         val group = GroupEntity(
             id = null,
             name = groupDto.name,
@@ -37,7 +38,10 @@ class GroupService(private val groupRepository: GroupRepository,private val user
             owner = owner,
             users = mutableListOf()
         )
-        group.users?.add(owner)
+        if (groupRepository.existsByName(groupDto.name)) {
+            throw IllegalArgumentException("El nombre del grupo ya existe.")
+        }
+        group.users.add(owner)
         groupRepository.save(group)
 
     }
@@ -46,7 +50,7 @@ class GroupService(private val groupRepository: GroupRepository,private val user
         if( userOptional.isPresent){
             val userEntity = userOptional.get()
             userEntity.name = name
-            groupRepository.save(userEntity);
+            groupRepository.save(userEntity)
         }
     }
 
