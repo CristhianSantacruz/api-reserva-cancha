@@ -8,9 +8,9 @@ interface IGroupService {
     fun getGroupById(id: UUID): Optional<GroupEntity>
     fun getGroupByName(groupName: String): Optional<GroupEntity>
     fun getAllGroups(): List<GroupEntity>
-    fun createGroup(groupDto: GroupDto)
+    fun createGroup(group: GroupDto,idUser:String) : GroupEntity
     fun updateName(id:UUID, name: String)
-    //fun addUserToGroup(idUser:String,idGroup:UUID)
+    fun addUserToGroup(idUser:String,idGroup:UUID) : GroupEntity
     // fun deleteUserToGroup(idUser: String,idGroup:UUID)
     fun deleteGroupById(idGroup: UUID) : Boolean
 

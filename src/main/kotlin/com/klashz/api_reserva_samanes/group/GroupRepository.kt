@@ -8,7 +8,7 @@ import java.util.UUID
 @Repository
 interface GroupRepository : JpaRepository<GroupEntity,UUID> {
 
-    fun findByGroupName(groupName: String): Optional<GroupEntity>
+    fun findByName(name: String): Optional<GroupEntity>
 
     fun existsByName(name: String): Boolean
 }

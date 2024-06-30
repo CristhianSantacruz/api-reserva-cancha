@@ -1,5 +1,6 @@
 package com.klashz.api_reserva_samanes.user
 
+import com.fasterxml.jackson.annotation.JsonIgnore
 import com.klashz.api_reserva_samanes.group.GroupEntity
 import jakarta.persistence.*
 import jakarta.validation.constraints.Email
@@ -30,7 +31,7 @@ data class UserEntity(
     @field:Enumerated(EnumType.STRING)
     @field:Column(name = "estado")
    var  state :  UserState?,
-    @field:Column(name = "telefono")
+    @field:Column(name = "telefono", unique = true)
     @field:Size(min = 1, max = 20, message = "El rango excede")
     @field:NotBlank(message = "El telefono no puede estar vacio")
     var phone : String,
@@ -39,10 +40,9 @@ data class UserEntity(
     @field:Column(name = "imagen")
     var image:String?,
 
-    @OneToOne(mappedBy = "owner", fetch = FetchType.LAZY)
-    var group: GroupEntity?,
 
-    @ManyToOne
+    @JsonIgnore
+    @ManyToOne(cascade = [CascadeType.ALL])
     @JoinColumn(name = "member_id")
-    var  groupMember : GroupEntity?
+    var  groupEntity : GroupEntity?
 )

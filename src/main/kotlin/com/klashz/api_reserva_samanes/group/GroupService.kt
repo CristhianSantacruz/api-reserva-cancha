@@ -14,35 +14,37 @@ class GroupService(private val groupRepository: GroupRepository,private val user
     }
 
     override fun getGroupByName(groupName: String): Optional<GroupEntity> {
-        return groupRepository.findByGroupName(groupName)
+        return groupRepository.findByName(groupName)
     }
 
     override fun getAllGroups(): List<GroupEntity> {
         return groupRepository.findAll().toList()
     }
-
+    // dto group tiene name y image
     @Transactional
-    override fun createGroup(groupDto: GroupDto) {
-        val owner =userService.getUserByDni(groupDto.ownerId)
+    override fun createGroup(groupDto: GroupDto, idUser: String) : GroupEntity {
+       val owner =userService.getUserByDni(idUser)
             .orElseThrow { IllegalArgumentException("Usuario no encontrado") }
 
-        if (owner.group != null) {
-            throw IllegalStateException("El usuario ya tiene un grupo asociado.")
+        if (owner.groupEntity != null) {
+            throw RuntimeException("User already owns a group")
         }
 
+        if (groupRepository.existsByName(groupDto.name)) {
+            throw RuntimeException("Ya existe un grupo con ese nombre")
+        }
 
         val group = GroupEntity(
             id = null,
             name = groupDto.name,
             imageGroup = groupDto.imageGroup,
             owner = owner,
-            users = mutableListOf()
+            users = mutableListOf(owner)
         )
-        if (groupRepository.existsByName(groupDto.name)) {
-            throw IllegalArgumentException("El nombre del grupo ya existe.")
-        }
-        group.users.add(owner)
-        groupRepository.save(group)
+        owner.groupEntity = group
+        val groupReturn = groupRepository.save(group);
+        userService.saveUser(owner)
+        return groupReturn
 
     }
     override fun updateName(id: UUID, name: String) {
@@ -54,8 +56,29 @@ class GroupService(private val groupRepository: GroupRepository,private val user
         }
     }
 
+    override fun addUserToGroup(idUser: String, idGroup: UUID) : GroupEntity{
+        val userOptional : Optional<UserEntity> = userService.getUserByDni(idUser);
+        val groupOptional : Optional<GroupEntity> = groupRepository.findById(idGroup);
+        if(userOptional.isEmpty) throw  RuntimeException("User not found")
+        if(groupOptional.isEmpty) throw RuntimeException("Group Not Found")
+        val user  = userOptional.get()
+        val group = groupOptional.get();
+
+        if(group.users.size>=16){
+            throw RuntimeException("Group FULL")
+        }
+
+        if(group.users.contains(user)) throw RuntimeException("User Exists in the Group")
+
+        user.groupEntity = group
+        group.users.add(user)
+        userService.saveUser(user)
+        return groupRepository.save(group)
 
 
+
+
+    }
 
 
     override fun deleteGroupById(idGroup: UUID) :Boolean {

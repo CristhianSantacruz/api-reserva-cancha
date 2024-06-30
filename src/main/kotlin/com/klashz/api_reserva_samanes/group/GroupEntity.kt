@@ -16,12 +16,10 @@ data class GroupEntity(
     @field:Column(name = "imagen")
     val imageGroup : String?,
 
-    @OneToOne(fetch = FetchType.LAZY, mappedBy = "group")
-    @JoinColumn(name = "owner_dni")
+    @OneToOne
+    @JoinColumn(name = "owner_id", referencedColumnName = "cedula")
     var owner : UserEntity?,
 
-    @OneToMany(mappedBy = "members")
-    var users: MutableList<UserEntity>
-){
-
-}
+    @OneToMany(fetch = FetchType.LAZY,  mappedBy = "groupEntity", cascade = [CascadeType.ALL])
+    var users: MutableList<UserEntity> = mutableListOf()
+)
